@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>로봇하드웨어개발기사 필기 노트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f5f1; --card:#ffffff; --ink:#1d2328; --sub:#5b646c; --line:#e3e1da;
+  --acc:#0f6e6a; --acc2:#e0f0ee; --warn:#a4501b; --warnbg:#fbeee4;
+  --ok:#2c7a3f; --okbg:#e6f3e8; --bad:#b3302b; --badbg:#fbe6e4;
+  --s1:#0f6e6a; --s2:#3b5ba5; --s3:#8a5a00; --s4:#7a3b8f;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#14181b; --card:#1d2226; --ink:#e7eaec; --sub:#9aa4ab; --line:#2e353a;
+    --acc:#4fc1b8; --acc2:#16302e; --warn:#f0a36b; --warnbg:#33241a;
+    --ok:#6fcf87; --okbg:#173022; --bad:#f08a84; --badbg:#3a1d1b;
+    --s1:#4fc1b8; --s2:#8aa8ef; --s3:#e0b354; --s4:#c99ae0; }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans KR",system-ui,sans-serif;line-height:1.65;font-size:15.5px}
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.hwrap{max-width:900px;margin:0 auto;padding:12px 16px 0}
+h1{font-size:18px;margin:0 0 8px;letter-spacing:-.3px}
+h1 small{font-weight:400;color:var(--sub);font-size:13px;margin-left:6px}
+nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:10px;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav a{flex:0 0 auto;text-decoration:none;color:var(--sub);border:1px solid var(--line);background:var(--card);padding:6px 12px;border-radius:999px;font-size:13.5px;white-space:nowrap}
+nav a.on{background:var(--acc);border-color:var(--acc);color:#fff}
+main{max-width:900px;margin:0 auto;padding:16px}
+section.view{display:none}
+section.view.on{display:block}
+h2{font-size:20px;margin:6px 0 4px}
+h3{font-size:16.5px;margin:22px 0 8px;padding-left:10px;border-left:4px solid var(--acc)}
+.lead{color:var(--sub);margin:0 0 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:10px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.subj{display:block;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;border-top:4px solid var(--c)}
+.subj b{display:block;font-size:15.5px}
+.subj span{color:var(--sub);font-size:13.5px}
+ul{padding-left:20px;margin:6px 0}
+li{margin:3px 0}
+.f{font-family:"JetBrains Mono",monospace;font-size:13.5px;background:var(--acc2);padding:1px 6px;border-radius:5px;white-space:nowrap}
+.formula{font-family:"JetBrains Mono",monospace;font-size:13.5px;background:var(--acc2);border-radius:8px;padding:10px 12px;margin:8px 0;overflow-x:auto;white-space:pre}
+.warn{background:var(--warnbg);border-left:4px solid var(--warn);border-radius:8px;padding:10px 12px;margin:10px 0;font-size:14.5px}
+.warn b:first-child{color:var(--warn)}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--acc2)}
+.tw{overflow-x:auto}
+.tag{display:inline-block;font-size:12px;padding:1px 8px;border-radius:999px;background:var(--acc2);color:var(--acc);margin-right:4px}
+/* quiz */
+.qbar{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 12px}
+button{font-family:inherit;font-size:14px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:7px 12px}
+button.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+button.sel{outline:2px solid var(--acc)}
+.q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:10px 0}
+.q .meta{font-size:12.5px;color:var(--sub);margin-bottom:4px}
+.q .stem{font-weight:500;margin-bottom:8px}
+.opt{display:block;width:100%;text-align:left;margin:6px 0;padding:9px 12px;border-radius:8px}
+.opt.right{background:var(--okbg);border-color:var(--ok)}
+.opt.wrong{background:var(--badbg);border-color:var(--bad)}
+.exp{display:none;margin-top:8px;font-size:14.5px;background:var(--acc2);border-radius:8px;padding:10px 12px}
+.q.done .exp{display:block}
+.score{position:sticky;bottom:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;box-shadow:0 4px 18px rgba(0,0,0,.08);font-size:14px}
+.score .row{display:flex;flex-wrap:wrap;gap:10px}
+.pass{color:var(--ok);font-weight:700}.fail{color:var(--bad);font-weight:700}
+.check li{list-style:none;margin-left:-20px}
+.check li::before{content:"☐ ";color:var(--acc)}
+footer{max-width:900px;margin:0 auto;padding:10px 16px 40px;color:var(--sub);font-size:12.5px}
+</style>
+</head>
+<body>
+<header><div class="hwrap">
+<h1>로봇하드웨어개발기사 <small>필기 노트 · 예상문제 · 실기 준비</small></h1>
+<nav id="nav">
+  <a href="#home" data-v="home">홈</a>
+  <a href="#s1" data-v="s1">1 드라이버설계</a>
+  <a href="#s2" data-v="s2">2 제어부설계</a>
+  <a href="#s3" data-v="s3">3 센서·신호처리</a>
+  <a href="#s4" data-v="s4">4 통합·시험평가</a>
+  <a href="#quiz" data-v="quiz">예상문제</a>
+  <a href="#practical" data-v="practical">실기 준비</a>
+</nav>
+</div></header>
+
+<main>
+<!-- ================= HOME ================= -->
+<section class="view" id="v-home">
+<h2>시험 한눈에 보기</h2>
+<p class="lead">필기는 객관식 4과목, 실기는 납땜과 MCU 프로그래밍을 하는 작업형입니다.</p>
+<div class="card tw">
+<table>
+<tr><th>구분</th><th>내용</th></tr>
+<tr><td>필기</td><td>4과목 × 20문항 = 80문항, 4지 택일, 2시간</td></tr>
+<tr><td>필기 합격</td><td>과목별 40점 이상 <b>그리고</b> 전체 평균 60점 이상</td></tr>
+<tr><td>실기</td><td>작업형, 약 6시간, 100점. 회로 납땜, 제어 프로그램 작성, 동작 확인</td></tr>
+<tr><td>시행</td><td>한국산업인력공단(큐넷). 2027년 일정은 보통 11월 하순에 공고</td></tr>
+</table>
+</div>
+<div class="grid">
+  <a class="subj" href="#s1" style="--c:var(--s1)"><b>1. 로봇드라이버설계</b><span>DC·BLDC·스테핑·서보, H브리지, PWM, MOSFET, 감속기</span></a>
+  <a class="subj" href="#s2" style="--c:var(--s2)"><b>2. 로봇제어부설계</b><span>MCU, 타이머·PWM, ADC, 인터럽트, UART/SPI/I2C/CAN, C 비트연산, PID</span></a>
+  <a class="subj" href="#s3" style="--c:var(--s3)"><b>3. 로봇 센서 및 신호처리</b><span>엔코더, IMU, 스트레인게이지, OP앰프, 필터, 샘플링, 노이즈</span></a>
+  <a class="subj" href="#s4" style="--c:var(--s4)"><b>4. 시스템 통합·시험평가</b><span>전원 설계, 신뢰성(MTBF), FMEA, IP 등급, 안전 표준, EMC</span></a>
+</div>
+<h3>추천 공부 순서 (전기기사 공부 경험 기준)</h3>
+<div class="card">
+<ul>
+<li><b>1주차:</b> 1과목 드라이버설계. 전기기기와 회로이론이 겹치니 공식만 정리하면 됩니다.</li>
+<li><b>2주차:</b> 2과목 제어부설계. 타이머 계산, ADC 분해능, 통신 방식 비교는 반드시 나오는 유형입니다.</li>
+<li><b>3주차:</b> 3과목 센서. OP앰프 이득, RC 필터, 엔코더 분해능 계산을 손으로 풀어 보세요.</li>
+<li><b>4주차:</b> 4과목 통합·시험. 신뢰성 계산과 표준 번호처럼 외울 것 위주입니다.</li>
+<li><b>마무리:</b> <a href="#quiz">예상문제</a>의 모의고사 모드로 과락 과목을 찾고, 틀린 문제만 다시 풀기.</li>
+</ul>
+</div>
+<div class="warn"><b>참고</b> 이 페이지의 요약과 예상문제는 큐넷 출제기준의 과목 구성을 바탕으로 직접 만든 것이고, 실제 기출문제가 아닙니다. 실제 기출이 담긴 문제집 한 권과 같이 보세요.</div>
+</section>
+
+<!-- ================= S1 ================= -->
+<section class="view" id="v-s1">
+<h2>1과목 · 로봇드라이버설계</h2>
+<p class="lead">액추에이터(모터)와 그 구동 회로. 전기기사의 전기기기와 회로이론에 해당합니다.</p>
+
+<h3>1-1. DC 모터 기본식</h3>
+<div class="formula">전압식   V = R·i + L·di/dt + e      (e = Ke·ω  역기전력)
+토크식   T = Kt·i                    (SI 단위에서 Kt = Ke)
+정상상태 ω = (V − R·T/Kt) / Ke        → 속도-토크 직선
+무부하속도 ω0 = V/Ke     기동(구속)전류 Is = V/R     구속토크 Ts = Kt·V/R
+최대 기계출력: T = Ts/2, ω = ω0/2 일 때  Pmax = Ts·ω0/4</div>
+<ul>
+<li>속도는 <b>인가 전압</b>에, 토크는 <b>전류</b>에 비례합니다.</li>
+<li>기동 순간엔 ω=0이라 역기전력이 0이고, 전류가 V/R로 가장 큽니다. 그래서 소프트스타트나 전류 제한이 필요합니다.</li>
+</ul>
+<div class="warn"><b>헷갈림 주의</b> 부하가 커지면 속도는 떨어지고 전류는 올라갑니다. 문제에서 "부하 증가 시 전류는?"이라고 물으면 증가가 답입니다.</div>
+
+<h3>1-2. 모터 종류 비교</h3>
+<div class="card tw"><table>
+<tr><th>종류</th><th>특징</th><th>시험 포인트</th></tr>
+<tr><td>브러시 DC</td><td>구조 간단, 제어 쉬움, 브러시 마모</td><td>속도 ∝ 전압, 토크 ∝ 전류</td></tr>
+<tr><td>BLDC</td><td>전자식 정류, 수명 길고 효율 높음</td><td>홀센서 3개, 6스텝(120° 통전): 한 번에 2상 통전</td></tr>
+<tr><td>PMSM / AC서보</td><td>정현파 구동, 엔코더 피드백</td><td>FOC: Clarke(abc→αβ) → Park(αβ→dq)</td></tr>
+<tr><td>스테핑</td><td>오픈루프 위치제어, 탈조 위험</td><td>1.8° = 200스텝/회전, 마이크로스텝은 스텝 수 × 분할수</td></tr>
+</table></div>
+<div class="formula">스테핑 1회전 펄스 = (360° / 스텝각) × 마이크로스텝 분할수
+예) 1.8°, 1/16 → 200 × 16 = 3200 펄스</div>
+
+<h3>1-3. 서보 드라이브 제어 루프</h3>
+<ul>
+<li>안쪽부터 <b>전류(토크) 루프 → 속도 루프 → 위치 루프</b>. 안쪽 루프일수록 대역폭이 넓고(빠르고) 주기가 짧습니다.</li>
+<li>튜닝 순서도 안쪽부터: 전류 → 속도 → 위치.</li>
+<li>제어 모드: 위치 모드(펄스열/필드버스), 속도 모드, 토크 모드.</li>
+</ul>
+
+<h3>1-4. H브리지와 PWM</h3>
+<div class="formula">평균 출력전압  Vavg = D × Vs      (D = Ton / T, 듀티비)
+PWM 주파수    f = 1 / T</div>
+<ul>
+<li>H브리지: 스위치 4개로 정·역회전과 제동을 합니다. 대각선 두 스위치를 켜면 한 방향으로 돕니다.</li>
+<li><b>슛스루(shoot-through):</b> 같은 레그의 상·하단이 동시에 켜져 전원이 단락되는 현상. 이걸 막는 게 <b>데드타임</b>입니다.</li>
+<li><b>프리휠링(환류) 다이오드:</b> 스위치가 꺼질 때 인덕턴스 전류가 흐를 길을 만들어 역기전압 스파이크를 막습니다.</li>
+<li><b>부트스트랩 회로:</b> 하이사이드 N채널 MOSFET은 게이트를 소스보다 높여야 해서, 커패시터로 승압된 게이트 전원을 만듭니다.</li>
+<li>PWM 주파수를 가청 대역(약 20kHz) 위로 올리면 소음이 줄지만 스위칭 손실이 늘어납니다.</li>
+</ul>
+
+<h3>1-5. 전력 반도체</h3>
+<div class="card tw"><table>
+<tr><th>소자</th><th>구동</th><th>용도</th></tr>
+<tr><td>BJT</td><td>전류 구동(베이스 전류)</td><td>소신호, 저전력</td></tr>
+<tr><td>MOSFET</td><td>전압 구동(게이트), 고속</td><td>저·중전압 모터 드라이버의 주력</td></tr>
+<tr><td>IGBT</td><td>전압 구동, 고전압·대전류</td><td>산업용 서보, 인버터(상대적으로 저주파)</td></tr>
+</table></div>
+<div class="formula">MOSFET 도통손실  P = I² × Rds(on)
+예) 5A, 20mΩ → 25 × 0.02 = 0.5 W
+총손실 = 도통손실 + 스위칭손실(∝ 스위칭 주파수)</div>
+
+<h3>1-6. 감속기와 관성</h3>
+<div class="formula">감속비 N (모터 N회전 → 출력 1회전)
+출력 토크 = 모터 토크 × N × 효율η     출력 속도 = 모터 속도 / N
+부하 관성의 모터축 환산  J' = J_load / N²</div>
+<ul>
+<li>관성비(부하 환산 관성 / 모터 관성)가 크면 응답이 나빠지고 진동이 생깁니다. 감속기를 쓰면 N²배로 줄어듭니다.</li>
+<li>하모닉 드라이브: 백래시가 거의 없고 감속비가 커서 협동로봇 관절에 많이 씁니다.</li>
+</ul>
+
+<h3>1-7. 제동과 보호</h3>
+<ul>
+<li><b>회생 에너지:</b> 감속할 때 모터가 발전기가 되어 DC링크 전압이 올라갑니다. <b>제동(회생)저항</b>으로 열로 소모시킵니다.</li>
+<li>과전류, 과전압, 저전압, 과열 보호. 전류 검출은 션트저항이나 홀 전류센서로 합니다.</li>
+<li>전자 브레이크: 수직축은 전원이 꺼지면 잡아주는 무여자 작동형을 씁니다.</li>
+</ul>
+
+<h3>1-8. 회로이론 단골</h3>
+<div class="formula">RC 시정수 τ = R·C      RL 시정수 τ = L/R
+1τ 후 충전 약 63.2%,  5τ 후 약 99% (정상상태로 봄)
+전력 P = V·I = I²R = V²/R</div>
+</section>
+
+<!-- ================= S2 ================= -->
+<section class="view" id="v-s2">
+<h2>2과목 · 로봇제어부설계</h2>
+<p class="lead">MCU 하드웨어, 주변장치, 통신, 임베디드 C, 제어 알고리즘.</p>
+
+<h3>2-1. MCU 구조</h3>
+<ul>
+<li>CPU 코어 + Flash(프로그램) + SRAM(변수) + 주변장치(GPIO, 타이머, ADC, 통신).</li>
+<li><b>하버드 구조:</b> 명령 버스와 데이터 버스가 분리되어 동시에 접근할 수 있습니다. <b>폰 노이만:</b> 하나의 버스를 공유합니다.</li>
+<li>클럭: 외부 크리스털 → PLL로 체배 → 시스템 클럭 → 버스별 분주.</li>
+<li>GPIO 출력: <b>푸시풀</b>(High/Low를 직접 구동), <b>오픈드레인</b>(Low만 구동하므로 풀업 필요, I2C에 사용).</li>
+</ul>
+
+<h3>2-2. 타이머와 PWM 계산</h3>
+<div class="formula">타이머 주파수  f = f_clk / ((PSC+1) × (ARR+1))
+듀티비        D = CCR / (ARR+1)
+예) 72MHz, PSC=71, ARR=999 → 72,000,000 / (72×1000) = 1 kHz
+    CCR=250 → 듀티 25%</div>
+<div class="warn"><b>헷갈림 주의</b> 레지스터 값에는 +1을 붙입니다. PSC=71이면 72분주예요.</div>
+
+<h3>2-3. ADC</h3>
+<div class="formula">1 LSB = Vref / 2^n
+측정 전압 = (ADC값 / 2^n) × Vref      (책에 따라 2^n − 1로 나누기도 함)
+예) 12비트, 3.3V → 1 LSB ≈ 0.806 mV,  값 2048 → 약 1.65 V</div>
+<ul>
+<li>방식: SAR(축차비교형, MCU 내장 주력), 플래시형(가장 빠름), 시그마-델타(고분해능, 느림).</li>
+<li>샘플링 정리: 샘플링 주파수 > 2 × 신호 최고 주파수. 지키지 않으면 앨리어싱이 생깁니다.</li>
+</ul>
+
+<h3>2-4. 인터럽트, DMA, 워치독</h3>
+<ul>
+<li><b>폴링:</b> CPU가 계속 확인. <b>인터럽트:</b> 사건이 생길 때만 ISR 실행. 응답이 빠르고 CPU가 덜 바쁩니다.</li>
+<li>ISR은 짧게 작성하고, 메인 루프와 공유하는 변수는 <span class="f">volatile</span>로 선언합니다(컴파일러 최적화 방지).</li>
+<li>NVIC: 인터럽트 우선순위, 중첩(선점)을 관리합니다.</li>
+<li><b>DMA:</b> CPU 개입 없이 주변장치와 메모리 간에 데이터를 옮깁니다(ADC 연속 변환, UART 수신).</li>
+<li><b>워치독 타이머:</b> 정해진 시간 안에 카운터를 리셋(킥)하지 않으면 MCU를 강제로 리셋합니다. 폭주 대비용입니다.</li>
+<li>BOR(Brown-out reset): 전원 전압이 떨어지면 리셋합니다.</li>
+</ul>
+
+<h3>2-5. 임베디드 C 비트 연산</h3>
+<div class="formula">비트 n 세트    REG |=  (1 << n);
+비트 n 클리어  REG &= ~(1 << n);
+비트 n 토글    REG ^=  (1 << n);
+비트 n 검사    if (REG & (1 << n)) { ... }</div>
+<ul>
+<li>레지스터 접근: <span class="f">*(volatile uint32_t*)주소</span>, 구조체로 레지스터 맵을 정의합니다.</li>
+<li>고정 크기 정수형: <span class="f">uint8_t</span>, <span class="f">int16_t</span>, <span class="f">uint32_t</span> (stdint.h).</li>
+</ul>
+
+<h3>2-6. 통신 방식 비교</h3>
+<div class="card tw"><table>
+<tr><th>방식</th><th>선</th><th>특징</th></tr>
+<tr><td>UART</td><td>TX, RX (+GND)</td><td>비동기, 클럭선 없음, 양쪽 보레이트가 같아야 함. 8N1 = 시작1+데이터8+정지1 = 10비트</td></tr>
+<tr><td>SPI</td><td>SCLK, MOSI, MISO, CS(SS)</td><td>동기식, 전이중, 빠름, 마스터 1 : 슬레이브 N (CS선이 슬레이브마다 필요)</td></tr>
+<tr><td>I2C</td><td>SDA, SCL</td><td>동기식, 반이중, 오픈드레인이라 <b>풀업저항 필수</b>, 7비트 주소, ACK</td></tr>
+<tr><td>CAN</td><td>CAN_H, CAN_L</td><td>차동, 멀티마스터, 양 끝 <b>120Ω 종단</b>, ID가 낮을수록 우선(우성=0)</td></tr>
+<tr><td>RS-485</td><td>A, B (차동)</td><td>장거리(약 1.2km), 멀티드롭, 주로 반이중</td></tr>
+<tr><td>EtherCAT</td><td>이더넷</td><td>프레임이 슬레이브를 지나가며 즉석 처리, 분산 클럭(DC)으로 정밀 동기화</td></tr>
+</table></div>
+<div class="formula">UART 초당 최대 바이트 = 보레이트 / 프레임 비트수
+예) 115200bps, 8N1 → 115200 / 10 = 11,520 바이트/초</div>
+
+<h3>2-7. PID 제어</h3>
+<div class="formula">u(t) = Kp·e + Ki·∫e dt + Kd·de/dt
+이산형 u[k] = Kp·e[k] + Ki·Ts·Σe + Kd·(e[k] − e[k−1])/Ts</div>
+<ul>
+<li><b>P:</b> 응답이 빨라지지만 정상상태 오차가 남고, 너무 크면 진동합니다.</li>
+<li><b>I:</b> 정상상태 오차를 없앱니다. 너무 크면 오버슈트가 생기고, 포화 시 <b>와인드업</b>이 일어납니다. 그래서 <b>안티와인드업</b>을 씁니다.</li>
+<li><b>D:</b> 오버슈트를 줄이고 감쇠를 늘리지만, 노이즈에 민감하니 저역통과필터와 같이 씁니다.</li>
+</ul>
+
+<h3>2-8. 모션 프로파일</h3>
+<div class="formula">사다리꼴: 가속 시간 ta = Vmax / a,   가속 구간 거리 = Vmax² / (2a)
+예) Vmax 1 m/s, a 2 m/s² → ta = 0.5 s, 거리 0.25 m</div>
+<ul>
+<li><b>사다리꼴:</b> 가속도가 계단처럼 바뀌어 저크(jerk)가 무한대가 되고, 충격과 진동이 생깁니다.</li>
+<li><b>S-커브:</b> 저크를 제한해 가속도가 연속으로 바뀌므로 부드럽습니다. 대신 이동 시간이 조금 깁니다.</li>
+</ul>
+</section>
+
+<!-- ================= S3 ================= -->
+<section class="view" id="v-s3">
+<h2>3과목 · 로봇 센서 및 신호처리</h2>
+<p class="lead">센서 원리와 아날로그·디지털 신호처리 회로.</p>
+
+<h3>3-1. 엔코더</h3>
+<div class="formula">4체배 분해능 = PPR × 4 (카운트/회전)
+각도 분해능 = 360° / (PPR × 4)
+예) 1000 PPR → 4000 카운트, 0.09°</div>
+<ul>
+<li><b>증분형(인크리멘털):</b> A상, B상이 90° 위상차. 어느 쪽이 앞서는지로 회전 방향을 판별하고, Z상은 1회전에 1펄스(원점)입니다. 전원이 꺼지면 위치를 잃습니다.</li>
+<li><b>절대형(앱솔루트):</b> 위치를 코드(그레이 코드 등)로 출력해 전원을 껐다 켜도 위치를 압니다. 멀티턴은 배터리나 기어로 회전수까지 기억합니다.</li>
+<li>레졸버: 회전 변압기 원리라 진동과 열에 강합니다.</li>
+</ul>
+<div class="card tw"><table>
+<tr><th>속도 측정법</th><th>방법</th><th>유리한 구간</th></tr>
+<tr><td>M법</td><td>일정 시간 동안 펄스 개수를 셈</td><td>고속</td></tr>
+<tr><td>T법</td><td>펄스 사이 시간(주기)을 잼</td><td>저속</td></tr>
+<tr><td>M/T법</td><td>둘을 결합</td><td>전 구간</td></tr>
+</table></div>
+
+<h3>3-2. 거리·근접·광센서</h3>
+<div class="formula">초음파 거리 d = v × t / 2      (v ≈ 340 m/s, t는 왕복 시간)
+예) 6 ms → 340 × 0.006 / 2 = 1.02 m</div>
+<ul>
+<li>유도형 근접센서는 <b>금속만</b> 감지합니다. 정전용량형은 플라스틱, 물 같은 <b>비금속도</b> 감지합니다.</li>
+<li>광전센서: 투과형(가장 확실), 회귀반사형, 확산반사형.</li>
+<li>LiDAR, ToF: 빛의 비행시간으로 거리를 잽니다.</li>
+<li><b>NPN 출력</b>은 싱크형이라 부하를 +V와 출력 사이에 겁니다. <b>PNP 출력</b>은 소스형이라 부하를 출력과 0V 사이에 겁니다.</li>
+</ul>
+
+<h3>3-3. 힘·토크와 스트레인게이지</h3>
+<div class="formula">게이지율 GF = (ΔR/R) / ε
+쿼터 브리지 출력 ≈ Vex × GF × ε / 4</div>
+<ul>
+<li>미세한 저항 변화를 전압으로 바꾸는 데 <b>휘트스톤 브리지</b>를 씁니다. 출력이 수 mV라 계측 증폭기로 키웁니다.</li>
+<li>하프/풀 브리지를 쓰면 감도가 올라가고 온도 보상이 됩니다.</li>
+</ul>
+
+<h3>3-4. IMU</h3>
+<ul>
+<li><b>가속도계:</b> 중력 방향으로 기울기를 알 수 있지만 진동 노이즈에 약합니다.</li>
+<li><b>자이로:</b> 각속도를 적분해 각도를 구하면 <b>드리프트</b>가 쌓입니다.</li>
+<li><b>상보필터:</b> 자이로는 고역, 가속도계는 저역을 취해 합칩니다. <b>칼만필터:</b> 확률 모델로 최적 추정합니다.</li>
+<li>지자기 센서는 요(yaw) 보정에 쓰지만 주변 자기장에 민감합니다.</li>
+</ul>
+
+<h3>3-5. OP앰프 회로</h3>
+<div class="formula">반전 증폭기     Av = −Rf / Rin
+비반전 증폭기   Av = 1 + Rf / Rin
+전압 팔로워     Av = 1 (임피던스 버퍼)
+차동 증폭기     Vout = (Rf/Rin)(V2 − V1)  (저항 정합 시)
+데시벨          dB = 20·log10(Vout/Vin)</div>
+<ul>
+<li><b>계측 증폭기:</b> 입력 임피던스가 매우 높고 CMRR이 높아 브리지 센서의 작은 차동 신호 증폭에 씁니다.</li>
+<li><b>비교기와 슈미트 트리거:</b> 히스테리시스를 줘서 노이즈로 출력이 떨리는(채터링) 것을 막습니다.</li>
+<li>이상적 OP앰프: 입력 임피던스 ∞, 출력 임피던스 0, 개방이득 ∞, 가상 단락.</li>
+</ul>
+
+<h3>3-6. 필터와 샘플링</h3>
+<div class="formula">RC 1차 필터 차단주파수  fc = 1 / (2πRC)
+예) 1kΩ, 0.1µF → 1 / (2π × 10⁻⁴) ≈ 1.59 kHz
+차단주파수에서 이득 = 1/√2 ≈ 0.707 = −3 dB
+1차 필터 감쇠 기울기 = −20 dB/decade</div>
+<ul>
+<li>LPF는 고주파 노이즈를 제거하고, HPF는 DC와 저주파 드리프트를 제거합니다.</li>
+<li>ADC 앞의 <b>안티앨리어싱 필터</b>는 LPF입니다.</li>
+<li>디지털 필터: 이동평균(간단), FIR(선형 위상, 항상 안정), IIR(적은 연산, 피드백이 있어 불안정할 수 있음).</li>
+</ul>
+
+<h3>3-7. 노이즈 대책과 신호 전송</h3>
+<ul>
+<li>디커플링 커패시터(0.1µF)는 IC 전원핀 가까이에 둡니다.</li>
+<li>트위스트 페어, 실드 케이블(실드는 한쪽 접지가 기본), 신호선과 동력선 분리 배선.</li>
+<li>포토커플러로 절연해 접지 루프와 서지를 차단합니다.</li>
+<li><b>4~20mA 전류 루프:</b> 장거리에서도 전압 강하 영향이 없고, 4mA를 0점으로 써서 0mA면 단선으로 판단합니다.</li>
+</ul>
+</section>
+
+<!-- ================= S4 ================= -->
+<section class="view" id="v-s4">
+<h2>4과목 · 로봇시스템 통합 및 시험평가</h2>
+<p class="lead">전원, 신뢰성, 안전, 시험 방법. 계산 몇 개와 외울 것 위주입니다.</p>
+
+<h3>4-1. 전원 설계</h3>
+<div class="formula">리니어(LDO) 발열  P = (Vin − Vout) × I,   효율 ≈ Vout / Vin
+예) 12V→5V, 1A → 7 W 발열, 효율 약 41.7%
+벅(강압) 컨버터   Vout = D × Vin   (이상적)
+부스트(승압)      Vout = Vin / (1 − D)
+배터리 사용시간  ≈ 용량(mAh) / 소비전류(mA)   예) 2000/500 = 4 h</div>
+<ul>
+<li>LDO는 노이즈가 적고 간단하지만, 전압 차가 크면 발열이 큽니다. 스위칭 레귤레이터는 효율이 높지만 스위칭 노이즈가 있습니다.</li>
+<li>리튬이온 셀: 공칭 3.6~3.7V, 만충 4.2V. 직렬 셀 수 S, 병렬 P (예: 6S → 공칭 약 22.2V).</li>
+<li>BMS: 과충전·과방전·과전류 보호, 셀 밸런싱.</li>
+<li>모터 전원과 로직 전원을 분리하거나 필터를 넣어 모터 노이즈가 MCU로 가지 않게 합니다.</li>
+</ul>
+
+<h3>4-2. 신뢰성</h3>
+<div class="formula">신뢰도        R(t) = e^(−λt)
+MTBF          = 1 / λ               예) λ = 0.001/h → 1000 h
+직렬 시스템   R = R1 × R2 × ...      예) 0.9 × 0.95 = 0.855
+병렬 시스템   R = 1 − (1−R1)(1−R2)  예) 0.9, 0.9 → 0.99
+가용도        A = MTBF / (MTBF + MTTR)   예) 900/(900+100) = 0.9
+FMEA          RPN = 심각도 S × 발생도 O × 검출도 D</div>
+<ul>
+<li><b>욕조 곡선:</b> 초기고장기(고장률 감소, 번인으로 걸러냄) → 우발고장기(고장률 일정) → 마모고장기(고장률 증가).</li>
+<li>FTA는 결과(톱 이벤트)에서 원인으로 내려가는 하향식, FMEA는 부품 고장 모드에서 영향을 따지는 상향식입니다.</li>
+</ul>
+
+<h3>4-3. 로봇 성능 지표</h3>
+<ul>
+<li><b>반복정밀도(repeatability):</b> 같은 지령 위치에 여러 번 갔을 때 흩어지는 정도. 산업용 로봇 사양서에 주로 적힙니다(예: ±0.02mm).</li>
+<li><b>정확도(accuracy):</b> 지령 위치와 실제 도달 위치의 차이. 보통 반복정밀도보다 값이 큽니다(나쁩니다).</li>
+<li>성능 시험 표준: <b>ISO 9283</b>. 그 밖에 가반하중, 작업영역, 자유도, 최대속도.</li>
+</ul>
+
+<h3>4-4. 안전 표준</h3>
+<div class="card tw"><table>
+<tr><th>표준</th><th>내용</th></tr>
+<tr><td>ISO 12100</td><td>기계 안전 일반원칙, 위험성 평가</td></tr>
+<tr><td>ISO 10218-1/-2</td><td>산업용 로봇 안전 (1: 로봇, 2: 로봇 시스템·통합)</td></tr>
+<tr><td>ISO/TS 15066</td><td>협동로봇. 신체 부위별 허용 힘·압력</td></tr>
+<tr><td>ISO 13849-1</td><td>제어 시스템 안전 관련부, 성능 수준 PL a~e</td></tr>
+<tr><td>IEC 60204-1</td><td>기계 전기장비. 정지 카테고리 0/1/2</td></tr>
+<tr><td>ISO 9283</td><td>산업용 로봇 성능 기준과 시험 방법</td></tr>
+</table></div>
+<ul>
+<li><b>정지 카테고리 0:</b> 즉시 동력 차단(비제어 정지). <b>1:</b> 제어 정지 후 동력 차단. <b>2:</b> 제어 정지 후 동력 유지.</li>
+<li>협동 운전 4가지: 안전 등급 감시 정지, 핸드 가이딩, 속도·간격 감시, 동력·힘 제한.</li>
+<li>비상정지 버튼은 적색 버섯형에 황색 배경, 수동 복귀형입니다.</li>
+</ul>
+
+<h3>4-5. 환경·EMC·IP 등급</h3>
+<ul>
+<li><b>IP 등급</b> IPXY: 첫째 자리 X는 고형물·먼지(0~6), 둘째 자리 Y는 물(0~9). IP67 = 완전 방진 + 일시 침수.</li>
+<li><b>EMC = EMI + EMS.</b> EMI는 내가 내보내는 노이즈(방사·전도 방출), EMS는 외부 노이즈를 견디는 능력(내성). ESD, 서지, EFT 시험이 EMS에 속합니다.</li>
+<li>환경시험: 고온·저온, 온습도, 진동, 충격, 염수분무.</li>
+</ul>
+
+<h3>4-6. 통합과 시험 절차</h3>
+<ul>
+<li>V-모델: 요구사항 ↔ 인수시험, 시스템 설계 ↔ 시스템시험, 상세 설계 ↔ 통합시험, 구현 ↔ 단위시험.</li>
+<li><b>검증(Verification):</b> 명세대로 제대로 만들었는가. <b>확인(Validation):</b> 사용자가 원하는 올바른 제품을 만들었는가.</li>
+<li>PCB: 전원·접지 패턴은 굵게, 접지 면(ground plane), 대전류와 신호 영역 분리, 발열 소자 방열.</li>
+<li>배선: 케이블 굴곡 반경, 케이블베어, 커넥터 체결 확인, 와이어 색상과 번호 표기.</li>
+</ul>
+</section>
+
+<!-- ================= QUIZ ================= -->
+<section class="view" id="v-quiz">
+<h2>예상문제</h2>
+<p class="lead">과목을 고르거나 전체 모의고사로 풀어 보세요. 고르면 바로 정답과 해설이 나옵니다.</p>
+<div class="qbar" id="qfilter">
+  <button data-s="all" class="sel">전체</button>
+  <button data-s="1">1 드라이버</button>
+  <button data-s="2">2 제어부</button>
+  <button data-s="3">3 센서</button>
+  <button data-s="4">4 통합·시험</button>
+  <button data-s="wrong">틀린 문제만</button>
+</div>
+<div class="qbar">
+  <button class="pri" id="btnShuffle">섞어서 다시</button>
+  <button id="btnReset">답 초기화</button>
+</div>
+<div id="qlist"></div>
+<div class="score" id="score"></div>
+</section>
+
+<!-- ================= PRACTICAL ================= -->
+<section class="view" id="v-practical">
+<h2>실기 준비 (작업형)</h2>
+<p class="lead">약 6시간 동안 회로를 납땜하고, MCU 프로그램을 작성해 요구 동작을 확인받는 시험입니다.</p>
+<div class="warn"><b>먼저 할 일</b> 큐넷에서 <b>최신 공개문제</b>를 내려받으세요. 2026년 3회부터 공개문제가 바뀌었다고 하니, 사용하는 MCU 보드, 부품 목록, 개발환경은 반드시 응시 회차 공개문제 기준으로 맞춰야 합니다.</div>
+
+<h3>준비물로 집에서 연습하기</h3>
+<div class="card"><ul>
+<li>온도조절 인두기, 인두팁, 실납(유연납), 플럭스, 솔더윅(흡입선), 니퍼, 롱노우즈, 와이어 스트리퍼</li>
+<li>디지털 멀티미터(도통 시험 부저 기능 필수)</li>
+<li>공개문제와 같은(또는 비슷한) MCU 보드, 만능기판(또는 문제용 PCB), 부품 키트</li>
+<li>노트북과 지정 개발환경(IDE), USB 다운로드 케이블</li>
+</ul></div>
+
+<h3>6시간 시간 배분 예시</h3>
+<div class="card tw"><table>
+<tr><th>단계</th><th>시간</th><th>할 일</th></tr>
+<tr><td>도면 분석</td><td>20분</td><td>회로도, 부품 목록, 요구 동작을 확인하고 부품 극성과 방향을 미리 표시</td></tr>
+<tr><td>부품 점검</td><td>20분</td><td>저항 색띠와 값, 다이오드·LED 극성, IC 핀 번호를 멀티미터로 확인</td></tr>
+<tr><td>납땜</td><td>2시간</td><td>키 낮은 부품(저항·다이오드)부터 → IC 소켓 → 커넥터·전해콘덴서 순</td></tr>
+<tr><td>통전 전 점검</td><td>20분</td><td>전원-GND 단락 여부 도통 시험, 냉납과 브리지 육안 검사</td></tr>
+<tr><td>프로그래밍</td><td>2시간</td><td>입출력부터 하나씩 동작 확인 → 기능 추가</td></tr>
+<tr><td>최종 확인</td><td>나머지</td><td>요구사항 항목별로 체크하고 정리</td></tr>
+</table></div>
+
+<h3>자주 감점되는 실수</h3>
+<div class="card"><ul class="check">
+<li>전해콘덴서, 다이오드, LED 극성을 반대로 꽂음</li>
+<li>IC 1번 핀(홈/점) 방향 착오</li>
+<li>냉납(표면이 탁하고 둥글게 뭉침), 인접 패드 간 납 브리지</li>
+<li>전원을 넣기 전에 VCC-GND 단락을 확인하지 않음</li>
+<li>풀업/풀다운 저항 누락으로 입력값이 떠다님(플로팅)</li>
+<li>스위치 채터링 처리(디바운싱)를 빠뜨림</li>
+<li>한 번에 코드를 다 짜고 디버깅하다 시간 초과. 기능 하나씩 확인하세요.</li>
+</ul></div>
+
+<h3>코드로 미리 익혀 둘 것</h3>
+<div class="card"><ul>
+<li>GPIO 입출력, 내부 풀업 설정, 스위치 디바운싱(약 20ms)</li>
+<li>타이머 인터럽트로 일정 주기 작업 만들기</li>
+<li>PWM으로 LED 밝기와 DC모터 속도 조절, 정·역회전(H브리지 입력 2개)</li>
+<li>ADC로 가변저항이나 센서 값을 읽어 전압으로 변환</li>
+<li>UART로 값 출력(디버깅에도 필수)</li>
+<li>FND·LCD 표시, 스테핑모터 상 여자 순서(공개문제에 나오는 경우)</li>
+</ul></div>
+</section>
+</main>
+
+<footer>요약과 예상문제는 큐넷 출제기준의 과목 구성을 바탕으로 직접 만든 학습 자료이며 실제 기출문제가 아닙니다. 시험 일정과 공개문제는 큐넷(q-net.or.kr)에서 확인하세요.</footer>
+
+<script>
+/* ---------- 문제 데이터: [과목, 문제, [보기4], 정답index, 해설] ---------- */
+const Q = [
+// ===== 1과목 =====
+[1,"토크상수 Kt = 0.05 N·m/A인 DC 모터에 4 A가 흐를 때 발생 토크는?",["0.02 N·m","0.2 N·m","0.8 N·m","2.0 N·m"],1,"T = Kt × i = 0.05 × 4 = 0.2 N·m"],
+[1,"전기자 저항 2 Ω인 DC 모터에 24 V를 인가했을 때 기동 순간 전류는? (인덕턴스 무시)",["48 A","24 A","12 A","6 A"],2,"기동 순간 ω=0이라 역기전력이 0입니다. I = V/R = 24/2 = 12 A"],
+[1,"DC 모터에서 부하 토크가 증가할 때 나타나는 현상으로 옳은 것은? (인가 전압 일정)",["속도 증가, 전류 감소","속도 감소, 전류 증가","속도 일정, 전류 감소","속도 증가, 전류 증가"],1,"T = Kt·i이므로 토크가 늘면 전류가 늘고, 전압강하 R·i가 커져 역기전력(속도)이 줄어듭니다."],
+[1,"스텝각 1.8°인 스테핑모터를 1/8 마이크로스텝으로 구동할 때 1회전에 필요한 펄스 수는?",["200","400","1600","3200"],2,"360/1.8 = 200 스텝, × 8 = 1600 펄스"],
+[1,"H브리지에서 같은 레그의 상단과 하단 스위치가 동시에 켜지는 것을 막기 위해 넣는 것은?",["부트스트랩 커패시터","데드타임","프리휠링 다이오드","소프트스타트"],1,"상·하단이 동시에 켜지면 전원이 단락(슛스루)됩니다. 한쪽이 꺼진 뒤 다른 쪽을 켜기까지 데드타임을 둡니다."],
+[1,"12 V 전원을 듀티비 25%로 PWM 구동할 때 평균 출력 전압은?",["3 V","6 V","9 V","12 V"],0,"Vavg = D × Vs = 0.25 × 12 = 3 V"],
+[1,"감속비 10:1(효율 100%) 감속기에 0.5 N·m, 1000 rpm의 모터를 연결했다. 출력축 토크와 속도는?",["0.05 N·m, 10000 rpm","5 N·m, 100 rpm","5 N·m, 10000 rpm","0.5 N·m, 100 rpm"],1,"토크는 N배(0.5×10 = 5 N·m), 속도는 1/N(1000/10 = 100 rpm)"],
+[1,"부하 관성 J_L이 감속비 N인 감속기를 통해 모터축에 환산될 때 값은?",["J_L × N","J_L / N","J_L × N²","J_L / N²"],3,"환산 관성은 감속비의 제곱에 반비례합니다. J' = J_L / N²"],
+[1,"홀센서를 이용한 BLDC 모터의 6스텝(120° 통전) 구동에서 한 순간 전류가 흐르는 상의 수는?",["1개","2개","3개","6개"],1,"6스텝 구동은 3상 중 2상에 전류를 흘리고 1상은 개방합니다."],
+[1,"AC 서보 드라이브의 제어 루프 중 가장 안쪽에 있어 응답이 가장 빠른 루프는?",["위치 루프","속도 루프","전류(토크) 루프","온도 루프"],2,"안쪽부터 전류 → 속도 → 위치 순이고, 안쪽 루프가 가장 빠릅니다."],
+[1,"하이사이드에 N채널 MOSFET을 사용할 때 게이트 구동 전압을 확보하기 위해 주로 쓰는 회로는?",["부트스트랩 회로","스너버 회로","풀다운 회로","클램프 회로"],0,"하이사이드 소스 전위가 전원 근처까지 올라가므로, 커패시터로 소스보다 높은 게이트 전압을 만드는 부트스트랩을 씁니다."],
+[1,"Rds(on) = 20 mΩ인 MOSFET에 5 A가 흐를 때 도통 손실은?",["0.1 W","0.5 W","1.0 W","2.5 W"],1,"P = I² × Rds(on) = 25 × 0.02 = 0.5 W"],
+[1,"모터를 급감속할 때 DC 링크 전압이 상승하는 것을 막기 위해 사용하는 것은?",["제동(회생)저항","션트저항","풀업저항","종단저항"],0,"감속 시 모터가 발전기로 동작해 생긴 회생 에너지를 제동저항에서 열로 소모시킵니다."],
+[1,"유도성 부하(모터 코일)를 스위칭할 때 스위치가 꺼지는 순간 생기는 역기전압으로부터 소자를 보호하는 다이오드는?",["제너 다이오드","프리휠링(환류) 다이오드","발광 다이오드","가변용량 다이오드"],1,"코일 전류가 흐를 길을 만들어 전압 스파이크를 막습니다."],
+[1,"L = 10 mH, R = 2 Ω인 RL 직렬회로의 시정수는?",["0.2 ms","5 ms","20 ms","50 ms"],1,"τ = L/R = 0.01/2 = 0.005 s = 5 ms"],
+[1,"벡터 제어(FOC)에서 정지 좌표계(αβ)의 전류를 회전자와 함께 도는 dq 좌표계로 바꾸는 변환은?",["Clarke 변환","Park 변환","푸리에 변환","라플라스 변환"],1,"Clarke: abc → αβ (정지), Park: αβ → dq (회전)"],
+[1,"다음 중 IGBT의 특징으로 가장 알맞은 것은?",["전류 구동 소자이다","저전압 소신호 증폭에 주로 쓴다","전압 구동이며 고전압·대전류 인버터에 적합하다","MOSFET보다 스위칭 주파수를 훨씬 높일 수 있다"],2,"IGBT는 MOSFET의 전압 구동과 BJT의 대전류 특성을 합친 소자로, 고전압·대전류에 쓰고 스위칭 속도는 MOSFET보다 느립니다."],
+
+// ===== 2과목 =====
+[2,"타이머 클럭 72 MHz, PSC = 71, ARR = 999일 때 PWM 주파수는?",["100 Hz","1 kHz","10 kHz","72 kHz"],1,"f = 72,000,000 / ((71+1)×(999+1)) = 72,000,000 / 72,000 = 1 kHz"],
+[2,"위 조건(ARR = 999)에서 CCR = 250이면 듀티비는?",["2.5%","25%","50%","75%"],1,"D = CCR / (ARR+1) = 250/1000 = 25%"],
+[2,"기준전압 3.3 V인 12비트 ADC의 1 LSB 크기는 약 얼마인가?",["0.806 mV","1.61 mV","3.22 mV","12.9 mV"],0,"3.3 / 4096 ≈ 0.000806 V = 0.806 mV"],
+[2,"기준전압 3.3 V인 12비트 ADC에서 변환값이 2048이면 입력 전압은 약?",["0.83 V","1.65 V","2.48 V","3.3 V"],1,"(2048/4096) × 3.3 = 1.65 V"],
+[2,"인터럽트 서비스 루틴과 메인 루프가 공유하는 변수에 붙여, 컴파일러가 최적화로 값을 캐시하지 않도록 하는 키워드는?",["static","const","volatile","extern"],2,"volatile은 매번 메모리에서 다시 읽도록 강제합니다."],
+[2,"레지스터 REG의 비트 3만 1로 만들고 나머지 비트는 유지하는 C 코드는?",["REG = (1<<3);","REG |= (1<<3);","REG &= (1<<3);","REG ^= ~(1<<3);"],1,"OR 연산으로 해당 비트만 세트합니다. REG = (1<<3)은 나머지 비트를 지웁니다."],
+[2,"레지스터 REG의 비트 5만 0으로 만드는 C 코드는?",["REG &= ~(1<<5);","REG |= ~(1<<5);","REG ^= (1<<5);","REG &= (1<<5);"],0,"반전 마스크와 AND 하면 해당 비트만 0이 됩니다."],
+[2,"I2C 통신에 대한 설명으로 옳은 것은?",["SCLK, MOSI, MISO, CS 4선을 사용한다","오픈드레인 구조라 SDA, SCL에 풀업저항이 필요하다","전이중 통신이다","클럭선 없이 보레이트를 맞춰 통신한다"],1,"I2C는 SDA, SCL 2선을 쓰는 반이중 동기 통신이고 오픈드레인이라 풀업이 필요합니다. 1번은 SPI, 4번은 UART 설명입니다."],
+[2,"다음 중 SPI 통신의 신호선이 아닌 것은?",["SCLK","MOSI","SDA","CS(SS)"],2,"SDA는 I2C의 데이터선입니다."],
+[2,"CAN 버스의 양 끝단에 설치하는 종단저항 값은?",["60 Ω","120 Ω","4.7 kΩ","10 kΩ"],1,"양 끝에 120 Ω씩(병렬 합성 60 Ω) 달아 반사를 막습니다."],
+[2,"CAN 통신에서 두 노드가 동시에 송신할 때 버스 사용권을 얻는 쪽은?",["ID 값이 큰 메시지","ID 값이 작은 메시지","데이터 길이가 긴 메시지","먼저 전원이 켜진 노드"],1,"우성 비트(0)가 열성(1)을 이기므로, ID가 작을수록 우선순위가 높습니다."],
+[2,"UART 8N1 형식으로 1바이트를 보낼 때 전송되는 총 비트 수는?",["8비트","9비트","10비트","11비트"],2,"시작 비트 1 + 데이터 8 + 정지 비트 1 = 10비트(패리티 없음)"],
+[2,"115200 bps, 8N1 UART로 1초에 보낼 수 있는 최대 바이트 수는?",["11,520","14,400","115,200","921,600"],0,"115200 / 10비트 = 11,520 바이트"],
+[2,"프로그램이 폭주해 정해진 시간 안에 카운터를 갱신하지 못하면 MCU를 자동 리셋하는 장치는?",["DMA","워치독 타이머","PLL","RTC"],1,"워치독은 주기적으로 리셋(킥)해 주지 않으면 시스템을 리셋합니다."],
+[2,"CPU의 개입 없이 주변장치와 메모리 사이에서 데이터를 직접 전송하는 기능은?",["NVIC","DMA","GPIO","BOR"],1,"DMA(Direct Memory Access)"],
+[2,"PID 제어에서 정상상태 오차를 제거하는 역할을 하는 항은?",["비례(P)","적분(I)","미분(D)","피드포워드"],1,"적분항은 오차가 남아 있는 한 출력이 계속 쌓여 오차를 0으로 만듭니다."],
+[2,"제어 출력이 포화된 상태에서 적분항이 계속 누적되어 큰 오버슈트가 생기는 현상을 막는 기법은?",["안티와인드업","데드밴드","피드포워드","디바운싱"],0,"와인드업(적분 포화)을 막기 위해 적분을 제한하거나 멈춥니다."],
+[2,"PID의 미분(D) 항에 대한 설명으로 옳은 것은?",["정상상태 오차를 없앤다","노이즈에 둔감하다","오버슈트를 줄이고 감쇠를 증가시킨다","응답을 느리게 만드는 것이 주목적이다"],2,"D항은 오차 변화율에 반응해 감쇠를 주지만 노이즈에 민감합니다."],
+[2,"저크(jerk)를 제한하여 가감속 시 충격과 진동을 줄이는 모션 프로파일은?",["사다리꼴 프로파일","S-커브 프로파일","계단 프로파일","삼각파 프로파일"],1,"S-커브는 가속도를 연속적으로 바꿔 저크를 제한합니다."],
+[2,"최고속도 1 m/s, 가속도 2 m/s²인 사다리꼴 프로파일에서 가속 구간 이동 거리는?",["0.25 m","0.5 m","1 m","2 m"],0,"s = v² / (2a) = 1 / 4 = 0.25 m (가속 시간 0.5 s)"],
+[2,"명령어 버스와 데이터 버스가 분리되어 동시에 접근할 수 있는 MCU 구조는?",["폰 노이만 구조","하버드 구조","CISC 구조","파이프라인 구조"],1,"하버드 구조는 명령과 데이터 메모리 경로를 분리합니다."],
+
+// ===== 3과목 =====
+[3,"1000 PPR 증분형 엔코더를 4체배하면 1회전당 카운트 수는?",["250","1000","2000","4000"],3,"1000 × 4 = 4000 카운트"],
+[3,"1000 PPR 엔코더를 4체배했을 때 각도 분해능은?",["0.09°","0.18°","0.36°","0.9°"],0,"360 / 4000 = 0.09°"],
+[3,"증분형 엔코더에서 A상과 B상의 위상차와 그 용도로 옳은 것은?",["90°, 회전 방향 판별","180°, 원점 검출","90°, 절대 위치 출력","45°, 노이즈 제거"],0,"A, B상은 90° 위상차이며 어느 상이 앞서는지로 방향을 판별합니다. 원점은 Z상입니다."],
+[3,"전원이 꺼졌다 켜져도 원점 복귀 없이 현재 위치를 알 수 있는 센서는?",["증분형 엔코더","앱솔루트 엔코더","타코제너레이터","홀 스위치"],1,"앱솔루트 엔코더는 위치를 코드로 출력합니다."],
+[3,"엔코더로 저속 회전 속도를 정밀하게 측정하는 데 유리한 방법은?",["M법","T법","적분법","미분법"],1,"T법은 펄스 주기를 재므로 펄스가 드문 저속에서 유리합니다. M법은 고속에 유리합니다."],
+[3,"초음파 센서의 송신부터 수신까지 걸린 시간이 6 ms일 때 물체까지 거리는? (음속 340 m/s)",["0.51 m","1.02 m","2.04 m","4.08 m"],1,"d = 340 × 0.006 / 2 = 1.02 m (왕복이므로 2로 나눔)"],
+[3,"Rin = 10 kΩ, Rf = 100 kΩ인 반전 증폭기의 전압 이득은?",["−11","−10","10","11"],1,"Av = −Rf/Rin = −100/10 = −10"],
+[3,"Rin = 10 kΩ, Rf = 90 kΩ인 비반전 증폭기의 전압 이득은?",["9","10","−9","−10"],1,"Av = 1 + Rf/Rin = 1 + 9 = 10"],
+[3,"R = 1 kΩ, C = 0.1 µF인 RC 저역통과필터의 차단주파수는 약?",["159 Hz","1.59 kHz","15.9 kHz","10 kHz"],1,"fc = 1/(2π × 1000 × 0.1×10⁻⁶) = 1/(6.283×10⁻⁴) ≈ 1592 Hz"],
+[3,"1차 저역통과필터의 차단주파수에서 출력 이득은?",["0 dB","−3 dB","−6 dB","−20 dB"],1,"이득이 1/√2 ≈ 0.707이 되는 점이며 20log(0.707) ≈ −3 dB"],
+[3,"최고 주파수 성분이 1 kHz인 신호를 앨리어싱 없이 샘플링하기 위한 조건은?",["500 Hz 초과","1 kHz 초과","2 kHz 초과","10 kHz 이상만 가능"],2,"나이퀴스트 조건: fs > 2 × fmax = 2 kHz"],
+[3,"스트레인게이지의 미세한 저항 변화를 전압으로 변환하는 데 주로 쓰는 회로는?",["휘트스톤 브리지","슈미트 트리거","전압 팔로워","적분기"],0,"브리지의 불평형 전압으로 변환한 뒤 계측 증폭기로 증폭합니다."],
+[3,"금속뿐 아니라 플라스틱, 물 같은 비금속 물체도 감지할 수 있는 근접센서는?",["유도형","정전용량형","홀 효과형","리드 스위치"],1,"유도형은 금속만 감지합니다. 정전용량형은 유전율 변화로 비금속도 감지합니다."],
+[3,"4~20 mA 전류 루프에서 4 mA를 0점(최소값)으로 쓰는 주된 이유는?",["전력 소모를 줄이기 위해","단선 검출을 위해","전압 이득을 높이기 위해","샘플링 속도를 높이기 위해"],1,"0 mA가 측정되면 정상 신호 범위 밖이므로 단선으로 판단할 수 있습니다."],
+[3,"자이로센서 값만 적분해 각도를 구할 때 생기는 대표적인 문제와 대책으로 옳은 것은?",["앨리어싱 / HPF 사용","드리프트 누적 / 가속도계와 상보필터","채터링 / 슈미트 트리거","포화 / 감쇠기 사용"],1,"자이로 바이어스가 적분되며 오차가 쌓입니다. 가속도계(저주파)와 상보필터나 칼만필터로 결합합니다."],
+[3,"브리지 센서의 작은 차동 신호를 높은 동상신호제거비(CMRR)로 증폭하기에 가장 알맞은 회로는?",["반전 증폭기","계측 증폭기","전압 팔로워","비교기"],1,"계측 증폭기는 입력 임피던스와 CMRR이 높습니다."],
+[3,"비교기 출력이 노이즈로 떨리는 현상을 막기 위해 히스테리시스를 준 회로는?",["슈미트 트리거","적분기","미분기","정류기"],0,"상승·하강 문턱 전압을 다르게 두어 채터링을 막습니다."],
+[3,"NPN 트랜지스터 출력형 센서(싱크형)에 부하를 연결하는 방법으로 옳은 것은?",["출력과 0V 사이","+V와 출력 사이","+V와 0V 사이 직접","출력 단독 개방"],1,"NPN 출력은 ON 시 출력을 0V로 끌어내리므로 부하는 +V와 출력 사이에 겁니다. PNP는 출력과 0V 사이입니다."],
+[3,"전압 이득이 100배일 때 데시벨로 나타내면?",["20 dB","40 dB","60 dB","100 dB"],1,"20 × log10(100) = 20 × 2 = 40 dB"],
+
+// ===== 4과목 =====
+[4,"리니어 레귤레이터(LDO)로 12 V를 5 V로 낮춰 1 A를 공급할 때 레귤레이터 발열은?",["5 W","7 W","12 W","17 W"],1,"P = (12 − 5) × 1 = 7 W, 효율은 5/12 ≈ 41.7%"],
+[4,"2000 mAh 배터리로 평균 500 mA를 소비하는 장치를 구동할 때 이론적 사용 시간은?",["0.25시간","2시간","4시간","10시간"],2,"2000 / 500 = 4시간 (실제로는 방전 특성상 더 짧음)"],
+[4,"이상적인 벅 컨버터에서 입력 24 V, 듀티비 0.5일 때 출력 전압은?",["6 V","12 V","24 V","48 V"],1,"Vout = D × Vin = 0.5 × 24 = 12 V"],
+[4,"고장률 λ가 0.001/h로 일정할 때 MTBF는?",["10 h","100 h","1000 h","10000 h"],2,"MTBF = 1/λ = 1000 h"],
+[4,"신뢰도 0.9와 0.95인 두 부품을 직렬로 연결한 시스템의 신뢰도는?",["0.855","0.900","0.925","0.995"],0,"직렬: 0.9 × 0.95 = 0.855"],
+[4,"신뢰도 0.9인 부품 두 개를 병렬(중복)로 구성한 시스템의 신뢰도는?",["0.81","0.90","0.95","0.99"],3,"병렬: 1 − (0.1 × 0.1) = 0.99"],
+[4,"MTBF 900시간, MTTR 100시간인 설비의 가용도는?",["0.8","0.9","0.95","0.99"],1,"A = 900 / (900 + 100) = 0.9"],
+[4,"FMEA에서 심각도 8, 발생도 3, 검출도 4일 때 위험우선순위(RPN)는?",["15","32","96","120"],2,"RPN = 8 × 3 × 4 = 96"],
+[4,"욕조 곡선에서 고장률이 거의 일정한 구간은?",["초기고장기","우발고장기","마모고장기","번인 구간"],1,"우발고장기는 고장률이 일정해 지수분포(R = e^−λt)로 다룹니다."],
+[4,"IP67 등급의 의미로 옳은 것은?",["방진 6, 방수 7(일시 침수)","방진 7, 방수 6","방수 6, 방진 7","방진 6, 방수 7(분사수)"],0,"첫째 자리는 고형물(6 = 완전 방진), 둘째 자리는 물(7 = 일시 침수)입니다."],
+[4,"같은 지령 위치에 여러 번 이동했을 때 도달 위치가 흩어지는 정도를 나타내는 로봇 성능 지표는?",["정확도","반복정밀도","분해능","가반하중"],1,"반복정밀도(repeatability)이며, 시험 방법은 ISO 9283에 있습니다."],
+[4,"산업용 로봇의 안전 요구사항을 다루는 국제 표준은?",["ISO 9001","ISO 10218","ISO 14001","IEC 61131"],1,"ISO 10218-1(로봇), -2(로봇 시스템·통합)"],
+[4,"협동로봇의 신체 부위별 허용 접촉 힘과 압력을 제시하는 기술 사양은?",["ISO/TS 15066","ISO 13849","IEC 60204-1","ISO 9283"],0,"ISO/TS 15066은 동력·힘 제한 방식 협동 운전의 기준을 다룹니다."],
+[4,"IEC 60204-1의 정지 카테고리 0에 해당하는 것은?",["제어 정지 후 동력 유지","제어 정지 후 동력 차단","즉시 동력 차단(비제어 정지)","속도를 줄인 상태로 계속 운전"],2,"0: 즉시 차단, 1: 제어 정지 후 차단, 2: 제어 정지 후 동력 유지"],
+[4,"외부에서 들어오는 전자기 노이즈를 견디는 기기의 능력을 뜻하는 용어는?",["EMI","EMS","ESR","EMF"],1,"EMS(Electromagnetic Susceptibility, 내성). EMI는 방출하는 노이즈입니다."],
+[4,"디지털 IC의 전원 노이즈를 줄이기 위한 디커플링 커패시터 배치로 가장 알맞은 것은?",["전원 커넥터 근처에 하나만","IC 전원핀 바로 가까이에 0.1 µF 정도","신호선과 직렬로","GND에서 멀리 떨어진 곳"],1,"IC 전원핀에 최대한 가까이 두어야 고주파 노이즈를 짧은 경로로 흡수합니다."],
+[4,"'사용자가 원하는 올바른 제품을 만들었는가'를 확인하는 활동은?",["검증(Verification)","확인(Validation)","단위시험","회귀시험"],1,"Validation은 사용자 요구 충족 여부, Verification은 명세대로 만들었는지를 봅니다."],
+[4,"결과 사건(톱 이벤트)에서 출발해 원인을 하향식으로 분석하는 기법은?",["FMEA","FTA","DOE","QFD"],1,"FTA(Fault Tree Analysis)는 하향식, FMEA는 부품 고장 모드부터 보는 상향식입니다."]
+];
+
+/* ---------- 라우팅 ---------- */
+const views=["home","s1","s2","s3","s4","quiz","practical"];
+function show(){
+  let h=(location.hash||"#home").slice(1); if(!views.includes(h)) h="home";
+  document.querySelectorAll("section.view").forEach(s=>s.classList.toggle("on",s.id==="v-"+h));
+  document.querySelectorAll("#nav a").forEach(a=>a.classList.toggle("on",a.dataset.v===h));
+  const on=document.querySelector('#nav a.on'); if(on) on.scrollIntoView({inline:"center",block:"nearest"});
+  window.scrollTo(0,0);
+}
+window.addEventListener("hashchange",show); show();
+
+/* ---------- 퀴즈 ---------- */
+let filter="all", order=Q.map((_,i)=>i), answers={};
+let perm=[];
+function newPerm(){ perm=Q.map(()=>shuffle([0,1,2,3])); }
+let wrongSet=new Set();
+try{ wrongSet=new Set(JSON.parse(localStorage.getItem("rhw_wrong")||"[]")); }catch(e){}
+function saveWrong(){ try{ localStorage.setItem("rhw_wrong",JSON.stringify([...wrongSet])); }catch(e){} }
+const SN={1:"드라이버설계",2:"제어부설계",3:"센서·신호처리",4:"통합·시험평가"};
+function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function visible(){ return order.filter(i=> filter==="all" ? true : filter==="wrong" ? wrongSet.has(i) : Q[i][0]==+filter); }
+function render(){
+  const list=document.getElementById("qlist"); list.innerHTML="";
+  const ids=visible();
+  if(!ids.length){ list.innerHTML='<div class="card">'+(filter==="wrong"?"틀린 문제가 없습니다.":"문제가 없습니다.")+'</div>'; }
+  ids.forEach((i,n)=>{
+    const [s,stem,opts,ans,exp]=Q[i];
+    const d=document.createElement("div"); d.className="q"+(i in answers?" done":"");
+    d.innerHTML='<div class="meta">'+(n+1)+'번 · '+s+'과목 '+SN[s]+'</div><div class="stem"></div>';
+    d.querySelector(".stem").textContent=stem;
+    const p=perm[i]; // p[displayPos] = original index
+    p.forEach((k,pos)=>{
+      const b=document.createElement("button"); b.className="opt"; b.dataset.k=k; b.textContent=["①","②","③","④"][pos]+" "+opts[k];
+      if(i in answers){ if(k===ans) b.classList.add("right"); else if(k===answers[i]) b.classList.add("wrong"); }
+      b.onclick=()=>{ if(i in answers) return; answers[i]=k;
+        if(k===ans) wrongSet.delete(i); else wrongSet.add(i); saveWrong();
+        const parent=b.parentNode; parent.classList.add("done");
+        parent.querySelectorAll(".opt").forEach(x=>{ const xk=+x.dataset.k; if(xk===ans) x.classList.add("right"); else if(xk===k) x.classList.add("wrong"); });
+        score(); };
+      d.appendChild(b);
+    });
+    const e=document.createElement("div"); e.className="exp"; e.textContent="정답 "+["①","②","③","④"][p.indexOf(ans)]+" · "+exp; d.appendChild(e);
+    list.appendChild(d);
+  });
+  score();
+}
+function score(){
+  const ids=visible(); const per={1:[0,0],2:[0,0],3:[0,0],4:[0,0]};
+  let tot=0,ok=0;
+  ids.forEach(i=>{ if(i in answers){ const s=Q[i][0]; per[s][1]++; tot++; if(answers[i]===Q[i][3]){per[s][0]++; ok++;} } });
+  const el=document.getElementById("score");
+  let html='<div><b>푼 문제 '+tot+' / '+ids.length+'</b> · 정답 '+ok+(tot?' ('+Math.round(ok/tot*100)+'점 환산)':'')+'</div>';
+  if(filter==="all" && tot===ids.length && tot>0){
+    let pts=[],fail=false;
+    for(const s of [1,2,3,4]){ const p=per[s][1]?Math.round(per[s][0]/per[s][1]*100):0; pts.push(p); if(p<40) fail=true; }
+    const avg=pts.reduce((a,b)=>a+b,0)/4;
+    html+='<div class="row">'+pts.map((p,k)=>(k+1)+'과목 <b class="'+(p<40?'fail':'')+'">'+p+'</b>').join(' · ')+'</div>';
+    html+='<div>평균 '+avg.toFixed(1)+'점 → '+((!fail&&avg>=60)?'<span class="pass">합격권</span>':'<span class="fail">불합격'+(fail?' (과락 과목 있음)':'')+'</span>')+'</div>';
+  } else if(filter==="all"){
+    html+='<div class="row" style="color:var(--sub)">전체를 다 풀면 과목별 점수와 과락 여부를 판정합니다.</div>';
+  }
+  el.innerHTML=html;
+}
+document.querySelectorAll("#qfilter button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("#qfilter button").forEach(x=>x.classList.remove("sel")); b.classList.add("sel");
+  filter=b.dataset.s; render(); });
+document.getElementById("btnShuffle").onclick=()=>{ order=shuffle(Q.map((_,i)=>i)); newPerm(); answers={}; render(); };
+document.getElementById("btnReset").onclick=()=>{ answers={}; render(); };
+newPerm(); render();
+</script>
+</body>
+</html>
